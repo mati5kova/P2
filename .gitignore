@@ -1,0 +1,6 @@
+*.diff
+*.res
+a.out
+*.c~
+*.c.un~
+*.obj
