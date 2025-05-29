@@ -6,7 +6,7 @@ int main()
 	int n; scanf("%d", &n);
 
 	char izhod[101];
-	int* t = calloc(1000000000, sizeof(int));
+	int* t = calloc(1000000, sizeof(int));
 
 	int currMax = 0;
 
