@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Ustvari .c datoteke
+touch prva.c druga.c tretja.c
+
+template='#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+int main() {
+
+    return 0;
+}
+'
+
+# Ustvari in napolni .c datoteke s predlogo
+for file in prva.c druga.c tretja.c; do
+    echo "$template" > "$file"
+done
+
+echo "Ustvaril: prva.c druga.c tretja.c"
+
+# Ustvari .in datoteke z vnosom uporabnika
+for i in {1..3}; do
+    filename="test$i.in"
+    echo "Vnesi vsebino za $filename (Ctrl+D ko koncas):"
+    cat > "$filename"
+    echo "$filename shranjen."
+done
+
+# Vprašaj za ukaz za odpiranje datotek (z npp kot privzeto)
+read -p "Zelis odpreti ustvarjene datoteke? [y/N]: " open_choice
+
+if [[ "$open_choice" == "y" || "$open_choice" == "Y" ]]; then
+    read -p "Vnesi ukaz za odpiranje datotek (privzeto: npp): " editor_cmd
+
+    # Uporabi npp, če je vnos prazen
+    if [[ -z "$editor_cmd" ]]; then
+        editor_cmd="npp"
+    fi
+
+    # Poskusi zagnati izbran ukaz
+    echo "Odpiram z: $editor_cmd"
+    $editor_cmd prva.c druga.c tretja.c test1.in test2.in test3.in &
+
+else
+    echo "Koncano."
+fi
+
