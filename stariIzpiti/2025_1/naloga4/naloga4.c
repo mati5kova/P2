@@ -21,108 +21,55 @@
 #include <stdbool.h>
 #include <string.h>
 
-bool preveri(int* t, int dolzina)
-{
-    int prev = -1;
-    int stPrev = 0;
-    for(int i = 0; i < dolzina; i++)
-    {
-        int el = t[i];
-        if(prev == -1)
-        {
-            prev = el;
-            stPrev = 1;
-            continue;
-        }
+long long memo[101][101][3][4];
 
-        if(prev == el)
-        {
-            stPrev++;
-        } else
-        {
-            if(prev == 0) // bela -> max 2
-            {
-                if(stPrev > 2)
-                    return false;
-                
-            } else
-            {
-                if(stPrev > 3)
-                    return false;
-            }
-            prev = el;
-            stPrev = 1;
-        }
-    }
-    if(prev == 0) // bela -> max 2
-    {
-        if(stPrev > 2)
-            return false;
-        
-    } else
-    {
-        if(stPrev > 3)
-            return false;
-    }
+long long rek(int preostaloBelih, int preostaloCrnih, int zaporednoBelih, int zaporednoCrnih) {
+    if (preostaloBelih < 0 || preostaloCrnih < 0) return 0;
+    
+    if (preostaloBelih == 0 && preostaloCrnih == 0) return 1;
+    
+    long long res = memo[preostaloBelih][preostaloCrnih][zaporednoBelih][zaporednoCrnih];
+    
+    if (res != -1) return res;
 
-    return true;
-}
-
-void izpisi(int* t, int dolzina)
-{
-    for(int i = 0; i  < dolzina; i++)
-        printf("%d",t[i]);
-    printf("\n");
-}
-
-int rek(int max, int m, int n, int* t, int dolzina)
-{
-    if(m == 0 && n > 3) return 0;
-    if(n == 0 && m > 2) return 0;
-
-    if(dolzina == max)
-    {
-        // preveri rešitev in po potrebi return 1
-        if(preveri(t, dolzina))
-        {
-            return 1;
-        }
-        return 0;
-    }
-
-    int st = 0;
-
-    // dodamo belo
-    if(m > 0)
-    {
-        t[dolzina] = 0; // 0 <- bela
-        st += rek(max, m - 1, n, t, dolzina + 1);
-
+    res = 0;
+    
+    // lahko dodamo belo, če nimamo že 2-eh belih
+    if (preostaloBelih > 0 && zaporednoBelih < 2) {
+        res += rek(preostaloBelih - 1, preostaloCrnih, zaporednoBelih + 1, 0);
     }
     
-
-    // dodamo črno
-    if(n > 0)
-    {
-        t[dolzina] = 1;
-        st += rek(max, m, n- 1, t, dolzina + 1);     
+    // lahko dodamo črno, če nimamo že 3-eh črnih
+    if (preostaloCrnih > 0 && zaporednoCrnih < 3) {
+        res += rek(preostaloBelih, preostaloCrnih - 1, 0, zaporednoCrnih + 1);
     }
     
-
-    return st;
+    memo[preostaloBelih][preostaloCrnih][zaporednoBelih][zaporednoCrnih] = res;
+    
+    return res;
 }
 
 int main() {
-    // dopolnite ...
     int m, n;
-    scanf("%d %d", &m, &n);
+    if (scanf("%d %d", &m, &n) != 2) return 0;
 
+    // napolnimo z -1
+    for (int preostaloBelih = 0; preostaloBelih <= m; ++preostaloBelih)
+    {
+        for (int preostaloCrnih = 0; preostaloCrnih <= n; ++preostaloCrnih)
+        {
+             for (int zaporednoBelih = 0; zaporednoBelih < 3; ++zaporednoBelih)
+             {
+                 for (int zaporednoCrnih = 0; zaporednoCrnih < 4; ++zaporednoCrnih)
+                 {
+                    memo[preostaloBelih][preostaloCrnih][zaporednoBelih][zaporednoCrnih] = -1;
+                 }
+             }
+        }
+    }
 
-    int* t = malloc((m+n)*sizeof(int));
+    long long st = rek(m, n, 0, 0);
+    printf("%lld\n", st);
 
-    int st = rek(m+n,m, n, t, 0);
-    printf("%d\n", st);
-
-    free(t);
     return 0;
 }
